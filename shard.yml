@@ -1,0 +1,23 @@
+name: netstat
+version: 0.1.0
+
+authors:
+  - W. Watson <Watson@vulk.coop>
+  - Joshua Darius <Joshua.smith@vulk.coop>
+  - Denver Williams <denver@debian.nz>
+
+crystal: '>= 1.0.0'
+license: MIT
+
+targets:
+  netstat:
+    main: "src/netstat.cr"
+
+dependencies:
+  kernel_introspection:
+    github: cnf-testsuite/kernel_introspection
+    branch: main
+  cluster_tools:
+    github: cnf-testsuite/cluster_tools
+    branch: main
+
