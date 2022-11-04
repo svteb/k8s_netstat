@@ -13,29 +13,26 @@ describe "netstat" do
     ClusterTools.install
   end
 
-  it "'helm' should install cnf" do
+  it "'helm' should install cnf with two services on the cluster that connect to the same database" do
     # sample-cnfs/ndn-multi-db-connections-fail
     release_name = "wordpress"
-    helm_namespace_option = nil
-    helm_values = nil
     helm_chart_directory = "sample-cnfs/ndn-multi-db-connections-fail/wordpress"
-
     install_success = true
-
-    begin
-      resp = Helm.install(release_name, helm_chart_directory, helm_namespace_option, helm_values)
-      Log.info { resp }
-      install_success = (resp[:status].exit_status == 0)
-    rescue e : Helm::InstallationFailed
-      Log.fatal {"Helm installation failed"} 
-      Log.fatal {"\t#{e.message}"} 
-      install_success = false
-    rescue e : Helm::CannotReuseReleaseNameError
-      Log.info {"Release name #{release_name} has already been setup."}
-      install_success = false
-    end
-
-    (install_success).should be_true
+    helm_install(release_name, helm_chart_directory)
+  ensure
+    resp = Helm.uninstall(release_name)
+    Log.info { resp }
+    resp[:status].exit_status == 0
+  end
+  
+  # sample-cnfs/sample-statefulset-cnf
+  it "'helm' should install cnf with no database used by two microservices" do
+    # sample-cnfs/ndn-multi-db-connections-fail
+    Helm.helm_repo_add("bitnami", "https://charts.bitnami.com/bitnami")
+    release_name = "test"
+    helm_chart = "bitnami/wordpress"
+    install_success = true
+    helm_install(release_name, helm_chart, nil, "--set mariadb.primary.persistence.enabled=false --set persistence.enabled=false")
   ensure
     resp = Helm.uninstall(release_name)
     Log.info { resp }
