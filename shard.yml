@@ -14,10 +14,16 @@ targets:
     main: "src/netstat.cr"
 
 dependencies:
+  kubectl_client:
+    github: cnf-testsuite/kubectl_client
+    branch: main
   kernel_introspection:
     github: cnf-testsuite/kernel_introspection
     branch: main
   cluster_tools:
     github: cnf-testsuite/cluster_tools
+    branch: main
+  helm:
+    github: cnf-testsuite/helm
     branch: main
 
