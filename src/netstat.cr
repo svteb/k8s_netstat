@@ -1,5 +1,3 @@
-require "colorize"
-require "kubectl_client"
 
 module Netstat 
 # kubectl exec cluster-tools-lhwkk -t -- nsenter -t 743858 -n netstat
@@ -48,34 +46,5 @@ module Netstat
                                             state: String))
     no_header = remove_header(output)
     parse_line(no_header)
-  end
-
-
-  module K8s
-    def self.proc(pod_name, container_name)
-      # todo if container_name nil, dont use container (assume one container)
-      resp = KubectlClient.exec("-ti #{pod_name} --container #{container_name} -- ls /proc/")
-      KernelIntrospection.parse_proc(resp[:output].to_s)
-    end
-
-    def self.cmdline(pod_name, container_name, pid)
-      # todo if container_name nil, dont use container (assume one container)
-      resp = KubectlClient.exec("-ti #{pod_name} --container #{container_name} -- cat /proc/#{pid}/cmdline")
-      resp[:output].to_s.strip
-    end
-
-    def self.status(pod_name, container_name, pid)
-      # todo if container_name nil, dont use container (assume one container)
-      resp = KubectlClient.exec("-ti #{pod_name} --container #{container_name} -- cat /proc/#{pid}/status")
-      KernelIntrospection.parse_status(resp[:output].to_s)
-    end
-
-    def self.status_by_proc(pod_name, container_name)
-      proc(pod_name, container_name).map { |pid|
-        stat_cmdline = status(pod_name, container_name, pid)
-        stat_cmdline.merge({"cmdline" => cmdline(pod_name, container_name, pid)}) if stat_cmdline
-      }.compact 
-
-    end
   end
 end
