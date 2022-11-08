@@ -131,37 +131,6 @@ module Netstat
       end
     end
 
-    def self.detect_multiple_pods_connected_to_mariadb
-      database_container_statuses = self.get_mariadb_pod_container_statuses
-      parsed_netstats = netstat_container_statuses(database_container_statuses)
-
-      integrated_database_found = false
-
-      parsed_netstats.each do |pn|
-        violators = self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
-
-        if violators.size > 1
-          integrated_database_found = true
-        end
-      end
-
-      integrated_database_found
-    end
-
-    def self.get_mariadb_pod_container_statuses
-      db_pods = self.get_mariadb_pods_by_digest
-
-      pod_statuses = self.get_pods_statuses(db_pods)
-
-      database_container_statuses = self.get_pods_container_statuses(pod_statuses)
-    end
-
-    def self.get_mariadb_pods_by_digest
-      db_match = Mariadb.match
-      Log.info { "DB Digest: #{db_match[:digest]}" }
-      KubectlClient::Get.pods_by_digest(db_match[:digest])
-    end
-
     def self.get_pods_statuses(pods)
       pod_statuses = pods.map { |i|
         {
@@ -203,6 +172,37 @@ module Netstat
 
         resp
       end.compact.flatten
+    end
+
+    def self.get_mariadb_pods_by_digest
+      db_match = Mariadb.match
+      Log.info { "DB Digest: #{db_match[:digest]}" }
+      KubectlClient::Get.pods_by_digest(db_match[:digest])
+    end
+	
+    def self.get_mariadb_pod_container_statuses
+      db_pods = self.get_mariadb_pods_by_digest
+
+      pod_statuses = self.get_pods_statuses(db_pods)
+
+      database_container_statuses = self.get_pods_container_statuses(pod_statuses)
+    end
+	   
+    def self.detect_multiple_pods_connected_to_mariadb
+      database_container_statuses = self.get_mariadb_pod_container_statuses
+      parsed_netstats = self.netstat_container_statuses(database_container_statuses)
+
+      integrated_database_found = false
+
+      parsed_netstats.each do |pn|
+        violators = self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
+
+        if violators.size > 1
+          integrated_database_found = true
+        end
+      end
+
+      integrated_database_found
     end
   end
 end
