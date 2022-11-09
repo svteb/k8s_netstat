@@ -33,7 +33,7 @@ module Netstat
         end
       end
 
-      all_service_pod_ips
+      all_service_pod_ips.flatten.compact
     end
 
     def self.detect_multiple_pods_connected_to_same_db_from_pod_id_and_node(id, cluster_tools_node)
@@ -190,18 +190,21 @@ module Netstat
     def self.detect_multiple_pods_connected_to_mariadb
       database_container_statuses = self.get_mariadb_pod_container_statuses
       Log.info { "DB Container Statuses: #{database_container_statuses}" }
-      parsed_netstats = self.netstat_container_statuses(database_container_statuses)
+      container_parsed_netstat_arrays = self.netstat_container_statuses(database_container_statuses)
 
-      #   integrated_database_found = false
-      #   parsed_netstats.each do |pn|
-      #     violators = self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
+      integrated_database_found = false
 
-      #     if violators.size > 1
-      #       integrated_database_found = true
-      #     end
-      #   end
+      container_parsed_netstat_arrays.each do |parsed_netstats|
+        parsed_netstats.each do |pn|
+          violators = self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
 
-      #   integrated_database_found
+          if violators.size > 1
+            integrated_database_found = true
+          end
+        end
+      end
+
+      integrated_database_found
     end
   end
 end
