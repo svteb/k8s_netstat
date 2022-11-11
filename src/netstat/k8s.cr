@@ -41,8 +41,6 @@ module Netstat
       self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(parsed_netstat)
     end
 
-    # # the response for this should be true for one of the cnfs and false for the other
-    # # once we can test that works then we can test the interim steps
     def self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(parsed_netstat)
       all_service_pod_ips = self.get_all_non_db_service_pod_ips
 
@@ -53,7 +51,7 @@ module Netstat
         local_address: String,
         foreign_address: String,
         state: String)) do |acc, x|
-        if x[:local_address].includes?(Mariadb::MYSQL_PORT)
+        if x[:local_address].includes?(Netstat::Mariadb::MYSQL_PORT)
           acc << x
         else
           acc
@@ -198,6 +196,8 @@ module Netstat
         parsed_netstats.each do |pn|
           violators = self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
 
+          ## TODO: find a way to make the function return these violators so they can be manipulated
+          ## 
           if violators.size > 1
             integrated_database_found = true
           end
@@ -205,6 +205,31 @@ module Netstat
       end
 
       integrated_database_found
+    end
+    
+    def self.get_multiple_pods_connected_to_mariadb_violators
+      database_container_statuses = self.get_mariadb_pod_container_statuses
+      Log.info { "DB Container Statuses: #{database_container_statuses}" }
+      container_parsed_netstat_arrays = self.netstat_container_statuses(database_container_statuses)
+
+      integrated_database_found = false
+
+      all_violators = [] of Array(JSON::Any)
+
+      container_parsed_netstat_arrays.each do |parsed_netstats|
+        parsed_netstats.each do |pn|
+          all_violators << self.detect_multiple_pods_connected_to_same_db_from_parsed_netstat(pn)
+        end
+      end
+
+      all_violators = all_violators.flatten.compact
+
+      Log.info { "get_multiple_pods_connected_to_mariadb_violators: #{all_violators}" }
+      all_violators
+    end
+
+    def self.detect_multiple_pods_connected_to_mariadb_from_violators(violators)
+      violators.size > 1
     end
   end
 end

@@ -33,7 +33,8 @@ describe "netstat" do
     
     it "should detect multiple pods conected to same db" do
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="wordpress", wait_count=180, namespace="default")
-      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb).should be_true
+      violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
+      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_true
     end
   end
   
@@ -57,7 +58,8 @@ describe "netstat" do
     
     it "should detect mutiple pods NOT connected to same db" do
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="test-wordpress", wait_count=180, namespace="default")
-      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb).should be_false
+      violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
+      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_true
     end
   end
 
