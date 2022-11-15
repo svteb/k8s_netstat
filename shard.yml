@@ -1,4 +1,4 @@
-name: netstat
+name: k8s_netstat
 version: 0.1.0
 
 authors:
@@ -10,7 +10,7 @@ crystal: '>= 1.0.0'
 license: MIT
 
 targets:
-  netstat:
+  k8s_netstat:
     main: "src/netstat.cr"
 
 dependencies:
