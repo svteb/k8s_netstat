@@ -31,18 +31,21 @@ describe "netstat" do
       helm_install(release_name, helm_chart_directory)
     end
     
-    it "should detect multiple pods conected to same db" do
+    it "k8s_netstat should detect multiple pods conected to same db" do
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="wordpress", wait_count=180, namespace="default")
       violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
-      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_true
+      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_false
     end
   end
   
   describe "cnf with no database is used by two microservices" do
-  # sample-cnfs/sample-statefulset-cnf
-    Helm.helm_repo_add("bitnami", "https://charts.bitnami.com/bitnami")
+    # sample-cnfs/sample-statefulset-cnf
     release_name = "test"
     helm_chart = "bitnami/wordpress"
+
+    before_all do
+      Helm.helm_repo_add("bitnami", "https://charts.bitnami.com/bitnami")
+    end
 
     after_all do 
       resp = Helm.uninstall(release_name)
@@ -56,10 +59,10 @@ describe "netstat" do
       helm_install(release_name, helm_chart, nil, "--set mariadb.primary.persistence.enabled=false --set persistence.enabled=false")
     end
     
-    it "should detect mutiple pods NOT connected to same db" do
+    it "k8s_netstat should detect mutiple pods NOT connected to same db" do
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="test-wordpress", wait_count=180, namespace="default")
       violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
-      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_true
+      (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_false
     end
   end
 
