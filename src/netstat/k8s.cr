@@ -5,16 +5,20 @@ require "../utils/mariadb.cr"
 
 module Netstat
   module K8s
-    def self.get_all_non_db_service_pod_ips
-      cnf_services = KubectlClient::Get.services(all_namespaces: true)
-      Log.info { "first cnf_services: #{cnf_services}" }
-
+    def self.get_all_db_pod_ips
       db_pods = self.get_mariadb_pods_by_digest
       Log.info { "DB Pods: #{db_pods}" }
 
       db_pod_ips = self.get_pods_ips(db_pods)
+      Log.info { "DB Pods ips #{db_pod_ips}" }
+      db_pod_ips 
+    end
 
-      Log.info { "DB Pods: #{db_pod_ips}" }
+    def self.get_all_non_db_service_pod_ips
+      cnf_services = KubectlClient::Get.services(all_namespaces: true)
+      Log.info { "all namespace services: #{cnf_services}" }
+
+      db_pod_ips = self.get_all_db_pod_ips
 
       # get all pod_ips by first cnf service that is not the database service
       all_service_pod_ips = [] of Array(NamedTuple(service_group_id: Int32, pod_ips: Array(JSON::Any)))
