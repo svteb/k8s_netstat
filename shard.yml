@@ -11,7 +11,7 @@ license: MIT
 
 targets:
   k8s_netstat:
-    main: "src/netstat.cr"
+    main: "k8s_netstat.cr"
 
 dependencies:
   kubectl_client:

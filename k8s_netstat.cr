@@ -1,0 +1,1 @@
+require "./src/netstat/k8s.cr"
