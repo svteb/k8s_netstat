@@ -1,5 +1,5 @@
 name: k8s_netstat
-version: 0.1.0
+version: 1.0.0
 
 authors:
   - W. Watson <Watson@vulk.coop>
