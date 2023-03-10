@@ -1,5 +1,5 @@
 name: k8s_netstat
-version: 0.1.0
+version: 1.0.0
 
 authors:
   - W. Watson <Watson@vulk.coop>
@@ -16,15 +16,14 @@ targets:
 dependencies:
   kubectl_client:
     github: cnf-testsuite/kubectl_client
-    branch: main
+    version: ~> 1.0.0
   kernel_introspection:
     github: cnf-testsuite/kernel_introspection
-    branch: main
+    version: ~> 0.1.0
   cluster_tools:
     # path: ../cluster_tools
     github: cnf-testsuite/cluster_tools
-    branch: main
+    version: ~> 1.0.0
   helm:
     github: cnf-testsuite/helm
-    branch: main
-
+    version: ~> 1.0.0
