@@ -19,7 +19,7 @@ dependencies:
     version: ~> 1.0.0
   kernel_introspection:
     github: cnf-testsuite/kernel_introspection
-    version: ~> 1.0.0
+    version: ~> 0.1.0
   cluster_tools:
     # path: ../cluster_tools
     github: cnf-testsuite/cluster_tools
