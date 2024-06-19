@@ -26,12 +26,9 @@ describe "netstat" do
       Log.info { resp }
       (resp[:status].exit_status == 0).should be_true
     end
-
-    it "should install" do
-      helm_install(release_name, helm_chart_directory)
-    end
     
     it "k8s_netstat should detect multiple pods conected to same db" do
+      helm_install(release_name, helm_chart_directory)
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="wordpress", wait_count=180, namespace="default")
       violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
       (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_false
@@ -54,12 +51,9 @@ describe "netstat" do
       Log.info { resp }
       (resp[:status].exit_status == 0).should be_true
     end
-
-    it "should install" do
-      helm_install(release_name, helm_chart, nil, "--set mariadb.primary.persistence.enabled=false --set persistence.enabled=false")
-    end
     
     it "k8s_netstat should detect mutiple pods NOT connected to same db" do
+      helm_install(release_name, helm_chart, nil, "--set mariadb.primary.persistence.enabled=false --set persistence.enabled=false")
       KubectlClient::Get.resource_wait_for_install(kind="Deployment", resource_name="test-wordpress", wait_count=180, namespace="default")
       violators = Netstat::K8s.get_multiple_pods_connected_to_mariadb_violators
       (Netstat::K8s.detect_multiple_pods_connected_to_mariadb_from_violators(violators)).should be_false
