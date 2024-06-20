@@ -112,7 +112,7 @@ module Netstat
       Log.info { "Container PID: #{pid}" }
 
       # get multiple call for a larger sample
-      parsed_netstat = (1..10).map {
+      parsed_netstat = (1..30).map {
         sleep 10
         netstat = ClusterTools.exec_by_node("nsenter -t #{pid} -n netstat -n", node_name)
         Log.info { "Container Netstat: #{netstat}" }
