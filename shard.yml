@@ -22,7 +22,7 @@ dependencies:
     version: ~> 0.1.0
   cluster_tools:
     # path: ../cluster_tools
-    github: cnf-testsuite/cluster_tools
+    github: svteb/cluster_tools
     version: ~> 1.0.0
   helm:
     github: cnf-testsuite/helm
