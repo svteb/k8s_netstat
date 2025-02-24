@@ -16,17 +16,17 @@ targets:
 dependencies:
   kubectl_client:
     github: cnf-testsuite/kubectl_client
-    branch: rlal-refactor-k8sclient-module
+    branch: wait_for_pods
     # version: ~> 1.0.0
   kernel_introspection:
     github: cnf-testsuite/kernel_introspection
     version: ~> 0.1.0
   cluster_tools:
     # path: ../cluster_tools
-    github: cnf-testsuite/cluster_tools
-    branch: rlal_change_kubectl_shard_ver
+    github: svteb/cluster_tools
+    branch: svetb_change_kubectl_shard_ver
     # version: ~> 1.0.0
   helm:
-    github: cnf-testsuite/helm
-    branch: rlal_change_kubectl_shard_ver
+    github: svteb/helm
+    branch: svteb_change_kubectl_shard_ver
     # version: ~> 1.0.0

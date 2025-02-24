@@ -15,7 +15,7 @@ module Netstat
     end
 
     def self.get_all_non_db_service_pod_ips
-      cnf_services = KubectlClient::Get.services(all_namespaces: true)
+      cnf_services = KubectlClient::Get.resource(kind: "services", all_namespaces: true)
       Log.info { "all namespace services: #{cnf_services}" }
 
       db_pod_ips = self.get_all_db_pod_ips
